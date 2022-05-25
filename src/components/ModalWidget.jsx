@@ -2,7 +2,14 @@ import React, { useCallback } from "react";
 import AddEditShortUrl from "./AddEditShortUrl";
 import DeleteShortUrl from "./DeleteShortUrl";
 
-const ModalWidget = ({ show, setShow, isDelete, refreshUrls, setIsDelete }) => {
+const ModalWidget = ({
+  show,
+  setShow,
+  isDelete,
+  refreshUrls,
+  setIsDelete,
+  allUrls,
+}) => {
   const renderContent = useCallback(() => {
     if (isDelete)
       return (
@@ -19,6 +26,7 @@ const ModalWidget = ({ show, setShow, isDelete, refreshUrls, setIsDelete }) => {
           setShow={setShow}
           show={show}
           refreshUrls={refreshUrls}
+          allUrls={allUrls}
         />
       );
   }, [isDelete, show]);
