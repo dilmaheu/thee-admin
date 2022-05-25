@@ -62,6 +62,11 @@ const Home = () => {
     setUrls(fetchedData);
     if (fetchedData.length > 0) setIsSearchDisabled(false);
   }, []);
+  const currentUrls = () =>
+    urls.reduce((acc, item) => {
+      if (item?.key) acc.push(item.key);
+      return acc;
+    }, []);
 
   useEffect(() => {
     getUrls();
@@ -131,6 +136,7 @@ const Home = () => {
         isDelete={isDelete}
         setIsDelete={setIsDelete}
         refreshUrls={getUrls}
+        allUrls={currentUrls}
       />
     </Layout>
   );

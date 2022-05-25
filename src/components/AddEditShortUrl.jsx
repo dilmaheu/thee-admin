@@ -5,7 +5,7 @@ import FailureDialogue from "./FailureDialogue";
 import SuccessDialogue from "./SuccessDialogue";
 import randomAlphaNumeric from "../utils/randomAlphaNumeric";
 
-const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
+const AddEditShortUrl = ({ show, setShow, refreshUrls, allUrls }) => {
   const [state, setState] = useState({
     shorturl: show?.key || "",
     website: show?.value || "",
@@ -23,22 +23,24 @@ const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
-    if (!state?.shorturl && state?.website) {
-      change = { ...change, shorturl: randomAlphaNumeric(3) };
-    }
+    let autoShortUrl;
     let nameExists;
-    await axios
-      .get(`https://readshorturl.dilmah.workers.dev/${state.shorturl}`)
-      .then((res) => {
-        nameExists = res.data;
-      })
-      .catch((_) => {
-        setShowDialogue("fail");
-        setTimeout(() => {
-          setShowDialogue("");
-          setFailMsg("");
-        }, 5000);
-      });
+    const shortUrls = allUrls();
+    if (!state?.shorturl && shortUrls.length > 0) {
+      let uniqueKeyCheck = shortUrls.filter(
+        (item) => item?.key == autoShortUrl
+      );
+      autoShortUrl = randomAlphaNumeric(3);
+      while (uniqueKeyCheck.length > 0) {
+        autoShortUrl = randomAlphaNumeric(3);
+        uniqueKeyCheck = shortUrls.filter((item) => item?.key == autoShortUrl);
+      }
+      setState({ ...state, shorturl: autoShortUrl });
+    } else if (!state?.shorturl) {
+      autoShortUrl = randomAlphaNumeric(3);
+    }
+
+    nameExists = shortUrls.filter((val) => val == state.shorturl);
     if (nameExists.length > 0) {
       setShowDialogue("fail");
       setFailMsg("Sorry Short URL Name Already Exists");
@@ -48,10 +50,16 @@ const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
       }, 5000);
     } else {
       await axios
-        .post("https://createshorturl.dilmah.workers.dev/", {
-          uniqueKey: state.shorturl,
-          website: state.website,
-        })
+        .post(
+          "https://createshorturl.dilmah.workers.dev/",
+          {
+            uniqueKey: autoShortUrl || state.shorturl,
+            website: state.website,
+          },
+          {
+            headers: { "Access-Control-Allow-Origin": "*" },
+          }
+        )
         .then((_) => {
           setShowDialogue("success");
           setTimeout(() => {
@@ -144,8 +152,7 @@ const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
                     id="shorturl"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="helloworld"
-                    pattern="\w+"
-                    required
+                    pattern="\w+|-"
                     onChange={(e) =>
                       handleChange({ ...state, shorturl: e.target.value })
                     }
