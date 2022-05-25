@@ -16,7 +16,7 @@ const TableRow = ({ shorturl, website, onEditClick, onDeleteClick }) => {
         </div>
       </td>
       <td className="whitespace-nowrap py-4 px-6 text-sm font-medium text-gray-900 dark:text-white">
-        {website}
+        <span title={website}>{website.substring(0, 30) + "..."}</span>
       </td>
       <td className="whitespace-nowrap py-4 px-6 text-sm font-medium text-gray-500 dark:text-white">
         {shorturl}

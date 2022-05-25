@@ -98,7 +98,7 @@ const Home = () => {
             <TableRow
               key={randomAlphaNumeric(6)}
               shorturl={item.key}
-              website={item.value.substring(0, 30) + "..."}
+              website={item.value}
               onEditClick={() => handleEdit(item)}
               onDeleteClick={() => handleDelete(item)}
             />
