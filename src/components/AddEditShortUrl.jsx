@@ -14,9 +14,6 @@ const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
   const [failMsg, setFailMsg] = useState("");
 
   const handleChange = (change) => {
-    if (!state?.shorturl && state?.website) {
-      change = { ...change, shorturl: randomAlphaNumeric(6) };
-    }
     setState(change);
   };
 
@@ -26,6 +23,9 @@ const AddEditShortUrl = ({ show, setShow, refreshUrls }) => {
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
+    if (!state?.shorturl && state?.website) {
+      change = { ...change, shorturl: randomAlphaNumeric(3) };
+    }
     let nameExists;
     await axios
       .get(`https://readshorturl.dilmah.workers.dev/${state.shorturl}`)
